@@ -19,6 +19,7 @@ namespace scisoft_PedroMartinez.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            //get
             return View();
         }
 
