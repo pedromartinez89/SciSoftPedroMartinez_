@@ -18,8 +18,7 @@ namespace scisoft_PedroMartinez.Controllers
     {
         [HttpGet]
         public ActionResult Index()
-        {
-            //get
+        {            
             return View();
         }
 
@@ -203,7 +202,7 @@ namespace scisoft_PedroMartinez.Controllers
         #endregion
 
 
-
+        //coment.
 
 
 
