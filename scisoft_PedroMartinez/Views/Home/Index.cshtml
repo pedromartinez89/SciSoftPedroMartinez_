@@ -1,0 +1,266 @@
+﻿@model scisoft_PedroMartinez.ViewModels.HomeViewModel
+@{
+    /**/
+
+    ViewBag.Title = "SciSoft Pedro Martinez";
+}
+
+<div class="jumbotron">
+    <h1>SCISOFT - Pedro Martínez</h1>
+    <p class="lead">Ejemplo de procesamiento de archivo SVG.</p>
+    <br />
+    - Reciba del cliente web un documento SVG<br />
+    - Cambie el canal alfa de todos los colores en el documento, a un valor indicado por el usuario.<br />
+    - Transforme todos los paths en el documento SVG según una transformación indicada por el usuario.<br />
+    - Filtre (remueva del documento) todo path tal que la diagonal de su "bounding box" sea menos a un parámetro especificado por el cliente.<br />
+    - Renderize el documento SVG final en un bitmap. El bitmap tiene que tener como color de fondo, uno especificado por el cliente. Esto NO tiene que hacerse modificando el SVG sino el renderizado<br />
+    - Devuelva el bitmap al cliente en formato Base64 <br />
+    <p>
+        Notas: El documento renderizado en el bitmap tiene que tener la orientación correcta. Es decir, si el SVG tiene, digamos, una casa dibujada, no tiene que quedar "hacia abajo" en el bitmap
+        Hacer también un cliente mínimo que permita elegir el SVG, poner los parámetros, muestre en un canvas a la izquierda el SVG, y el bitmap devuelto por el servidor a la derecha.
+    </p>
+
+</div>
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>1. Seleccione un archivo</h2>
+                @Html.ActionLink("Descargar ejemplo de SVG para testear", "SVG1Download", "home")
+                <br />
+                <div class="form-group" style="margin-top:5%">
+                    @Html.TextBoxFor(m => m.SVGFile, new { type = "file" })
+                    <input type="submit" value="subir archivo svg al servidor" />
+
+                    <br />
+
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <h2>2. Archivo original</h2>
+                <div class="card" style="width: 18rem;">
+
+                    <div id="svgOriginal" style="display:flex"></div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">Archivo original</h5>
+                        <p class="card-text">Archivo SVG sin procesar.</p>
+
+                        <input type="button" class="btn btn-primary" value="Mostrar Archivo Original" onclick="loadOriginalSVG()" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <h2>3. Archivo Procesado</h2>
+                <div class="card" style="width: 18rem;">
+
+                    <div id="svgModificado" style="display:flex"></div>
+
+
+                    <div class="card-body">
+                        <h5 class="card-title">Archivo Procesado</h5>
+                        <p class="card-text">Archivo SVG procesado.</p>
+
+                        <input type="number" id="inpAlpha" min="0" max="1" step="0.1" value="1" class="col-2" onchange="alphaChanelChange(this)" /> Canal A
+                        <br /><br />
+                        @Html.TextBoxFor(m => m.BackgroundcolorSelection, new { id = "colorSelector", type = "color" })
+                        Color de fondo <br />
+
+                        <input type="button"  value="Descargar bmp" onclick="convertSVG('ConvertToBmp')" class="btn btn-primary" />                            
+                        
+                        <input type="button"  value="Descargar jpeg" style="margin-top:2%" onclick="convertSVG('ConvertToJpeg')" class="btn btn-primary" />                        
+                                             
+                        <!--<input type="button" value="Cambiar tamaño" style="margin-top:2%" onclick="resize()" class="btn btn-primary" />-->
+                        <br />
+                        <button type="button"  class="btn btn-primary" onclick="convertSVG('ConvertToBmp64')" style="margin-top:2%" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            base 64 bmp
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">archivo bmp en base64</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body" id="base64">
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:2%">
+            <input type="button" class="btn btn-primary" value="Mostrar todos los Paths para editar" onclick="getAllPaths()" />
+            <div id="txtPathsGroup" style="margin-top:2%">
+            </div>
+            <input type="button" id="btnUpdatePath" class="btn btn-primary" style="visibility:hidden" value="actualizar los paths" onclick="updateSVGPath()" />
+        </div>
+    </div>
+
+}
+
+
+<!--el siguiente script tendría que ir en un archivo js. 
+    Pero lo dejo acá para facilitar la corrección del ejercicio-->
+<script>
+    
+    //punto 1 y 2
+    function alphaChanelChange(p) {
+        //si tiene seteado en 1 el fill-opacity lo limpio.
+        var s = document.getElementById("svgModificado").innerHTML.replace("fill-opacity:1;", "");
+        document.getElementById("svgModificado").innerHTML = s;
+        //cambio el fill
+        document.getElementById("svgModificado").setAttribute("style", "fill-opacity:" + p.value + ";display:flex");        
+    }  
+    //punto 3
+    function updateSVGPath()
+    {
+        var qPaths = document.getElementsByName("txtPath").length;
+        for (var i = 0; i < qPaths; i++)
+        {
+            var oldPath = document.getElementById("svgModificado").childNodes[0].getElementsByTagName("path")[i];
+            var newPathStr = document.getElementsByName("txtPath")[i].value;
+
+            var newPath = createElementFromHTML(newPathStr);
+            if (oldPath.outerHTML != newPath.outerHTML)
+            {
+                oldPath.parentNode.replaceChild(newPath, oldPath);
+            }
+        }
+        reloadSVGmodified();
+    }    
+    //punto 4
+    function getBoundingBoxForPath(btn)
+    {
+        document.getElementById("svgModificado").getElementsByTagName("path")[btn.id].setAttribute("id", "p" + btn.id);
+        var filter = document.getElementById("txtBBox" + btn.id).value;
+
+        var b = document.getElementById("p" + btn.id).getBBox();
+        //Acá comparo el valor ingresado Vs la x del bounding box, pero podria comparar vs cualquier valor del bbox.
+        //b.y //b.height //b.width
+        if (b.x > filter) 
+        {
+            document.getElementById("svgModificado").getElementsByTagName("path")[btn.id].remove();
+        }
+    }
+    //punto 5
+    function convertSVG(ext)
+    {        
+        var svgCode = document.getElementById("svgModificado").firstChild.outerHTML;
+        var bkgClr = document.getElementById("colorSelector").value;
+        var encodedStringBtoA = btoa(svgCode);
+        var alfa = document.getElementById("inpAlpha").value;
+        $.ajax({
+            type: 'POST',
+            url: "/Home/" + ext,
+            data: '{svgCode: "' + encodedStringBtoA + '", bkgColor: "' + bkgClr + '", alpha: "' + alfa + '" }',
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            success: function (data) {
+                if (ext == "ConvertToBmp64") {
+                    document.getElementById("base64").innerHTML = data;
+                }
+                else
+                {
+                    window.location.href = "/Home/DownloadFile?pathFileToDownload=" + data;
+                } 
+               
+            }
+        });
+    }
+  
+   
+
+    //item extra
+    function reloadSVGmodified() {
+        var s = document.getElementById("svgModificado").innerHTML;
+        document.getElementById("svgModificado").innerHTML = s;
+    }
+
+    //helpers:
+    function createElementFromHTML(htmlString) {
+        var div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+        return div.firstChild;
+    }   
+
+    function getAllPaths()
+    {
+        var serializedPaths = @(Html.Raw(ViewBag.allPaths));
+        var pathGroups = document.getElementById("txtPathsGroup");
+
+        //por cada path creo un input text con value del path.
+        for (var i = 0; i < serializedPaths.length; i++)
+        {
+            var txt = document.createElement("input");
+            txt.type = "text";
+            txt.value = serializedPaths[i];
+            txt.id = "path" + i;
+            txt.className = "form-control";
+            txt.style = "min-width: 100%";
+            txt.setAttribute("name", "txtPath");
+            txt.name = "txtPath";
+            pathGroups.appendChild(txt);
+
+            var txtBBox = document.createElement("input");
+            txtBBox.type = "number";
+            txtBBox.setAttribute("class", "col-1");
+            txtBBox.id = "txtBBox" + i;
+            pathGroups.appendChild(txtBBox);
+
+            var btn = document.createElement("input");
+            btn.value = "Filtrar BoundingBox";
+            btn.type = "button";
+            btn.id =  i;
+            btn.setAttribute("class", "btn btn-primary");
+            btn.setAttribute("onclick", "getBoundingBoxForPath(this)");
+            btn.setAttribute("name", "btnPath");
+            pathGroups.appendChild(btn);
+            pathGroups.appendChild(document.createElement("br"));
+            pathGroups.appendChild(document.createElement("br"));
+            document.getElementById("btnUpdatePath").setAttribute("style","visibility: visible");
+        }
+
+    }
+
+    function loadOriginalSVG()
+    {
+        var c = "@(Html.Raw(ViewBag.svgCode))"; //cargo el codigo xml del svg para su futura manipulacion.
+
+        document.getElementById("svgOriginal").innerHTML = c; //version original
+        document.getElementById("svgModificado").innerHTML = c; //version a procesar.
+    }
+
+    function resize()
+    {
+        var path = "";
+        var width = 400;
+        var height = 400;
+        $.ajax({
+            type: 'POST',
+            url: "/Home/Resize",
+            data: '{path: "' + path + '", width: "' + width + '", height: "' + height + '" }',
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            success: function (data) {
+                window.location.href = "/Home/DownloadFile?pathFileToDownload=" + data;
+            }
+
+        });
+    }
+
+    
+
+</script>

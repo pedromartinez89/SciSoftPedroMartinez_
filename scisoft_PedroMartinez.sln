@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scisoft_PedroMartinez", "scisoft_PedroMartinez\scisoft_PedroMartinez.csproj", "{246AD7E7-6A0E-410E-8A3D-416C9C84A3DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCISOFT_SVGCoreFrameWork", "SCISOFT_SVGCoreFrameWork\SCISOFT_SVGCoreFrameWork.csproj", "{2CBCEF8A-CC3E-47F6-9C92-F1AC0833D81B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCISOFT_DTO", "SCISOFT_DTO\SCISOFT_DTO.csproj", "{8E0C6E1E-9F4E-429F-8E6A-78A26E236081}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{246AD7E7-6A0E-410E-8A3D-416C9C84A3DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{246AD7E7-6A0E-410E-8A3D-416C9C84A3DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{246AD7E7-6A0E-410E-8A3D-416C9C84A3DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{246AD7E7-6A0E-410E-8A3D-416C9C84A3DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CBCEF8A-CC3E-47F6-9C92-F1AC0833D81B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CBCEF8A-CC3E-47F6-9C92-F1AC0833D81B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CBCEF8A-CC3E-47F6-9C92-F1AC0833D81B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CBCEF8A-CC3E-47F6-9C92-F1AC0833D81B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E0C6E1E-9F4E-429F-8E6A-78A26E236081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E0C6E1E-9F4E-429F-8E6A-78A26E236081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E0C6E1E-9F4E-429F-8E6A-78A26E236081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E0C6E1E-9F4E-429F-8E6A-78A26E236081}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CCBA41AC-E840-4556-B1F3-1D03D67FEAD9}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://martinezpedro89.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = scisoft_PedroMartinez\\scisoft_PedroMartinez.csproj
+		SccProjectName1 = scisoft_PedroMartinez
+		SccLocalPath1 = scisoft_PedroMartinez
+		SccProjectUniqueName2 = SCISOFT_SVGCoreFrameWork\\SCISOFT_SVGCoreFrameWork.csproj
+		SccProjectName2 = SCISOFT_SVGCoreFrameWork
+		SccLocalPath2 = SCISOFT_SVGCoreFrameWork
+		SccProjectUniqueName3 = SCISOFT_DTO\\SCISOFT_DTO.csproj
+		SccProjectName3 = SCISOFT_DTO
+		SccLocalPath3 = SCISOFT_DTO
+	EndGlobalSection
+EndGlobal
